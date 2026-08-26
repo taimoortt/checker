@@ -73,14 +73,31 @@ python3 artifact_pipeline.py reproduce \
 ## Controlled workflow
 
 ```bash
+# Install and verify the bundled radio-trace dataset.
 python3 artifact_pipeline.py traces
+
+# Compile the LTE simulator and RadioNinja implementation.
 python3 artifact_pipeline.py build
+
+# Run the artifact's infrastructure, manifest, analysis, and trace-data tests.
 python3 -m unittest discover -s tests -v
+
+# Execute every configured Scenario 1 algorithm for the paper's 50 seeds.
 python3 artifact_pipeline.py run --scenario 1 --seeds 0-49 --jobs 5
+
+# Execute every configured Scenario 2 algorithm for the paper's 50 seeds.
 python3 artifact_pipeline.py run --scenario 2 --seeds 0-49 --jobs 5
+
+# Generate metrics, plots, bootstrap intervals, and operator summaries.
 python3 artifact_pipeline.py analyze --scenario all --seeds 0-49
+
+# Compare the generated operator results with the configured paper targets.
 python3 artifact_pipeline.py validate --scenario all --seeds 0-49
+
+# Independently recalculate the metrics and check agreement with the operator.
 python3 artifact_pipeline.py audit --scenario all --seeds 0-49
+
+# Combine run integrity, validation, audit, and figure checks into one report.
 python3 artifact_pipeline.py consolidate --scenario all --seeds 0-49
 ```
 
