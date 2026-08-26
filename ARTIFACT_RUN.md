@@ -11,19 +11,35 @@ python3 artifact_pipeline.py COMMAND [OPTIONS]
 ```bash
 python3 artifact_pipeline.py reproduce \
   --scenario all \
+  --seeds 0-49 \
+  --jobs 5
+```
+
+This builds and freezes one simulator/config set, executes all 450 full-duration
+runs, generates figures and compact metrics, validates results, performs an
+independent recalculation, and writes a consolidated report. The paper's
+evaluation uses seeds 0–49, so this is also the pipeline default and the seed
+argument may be omitted.
+
+The complete evaluation can take a long time. For a faster reproduction that
+provides approximate results, use seeds 0–19:
+
+```bash
+python3 artifact_pipeline.py reproduce \
+  --scenario all \
   --seeds 0-19 \
   --jobs 5
 ```
 
-This builds and freezes one simulator/config set, executes all 180 full-duration
-runs, generates figures and compact metrics, validates results, performs an
-independent recalculation, and writes a consolidated report.
+Results from this shortened campaign are useful for evaluation and debugging,
+but will not be identical to the paper's 50-seed results or satisfy the final
+full-reproduction gate.
 
 To keep campaign data elsewhere:
 
 ```bash
 python3 artifact_pipeline.py reproduce \
-  --scenario all --seeds 0-19 --jobs 5 \
+  --scenario all --seeds 0-49 --jobs 5 \
   --run-dir /path/to/runs \
   --output-dir /path/to/analysis
 ```
@@ -33,12 +49,12 @@ python3 artifact_pipeline.py reproduce \
 ```bash
 python3 artifact_pipeline.py build
 python3 -m unittest discover -s tests -v
-python3 artifact_pipeline.py run --scenario 1 --seeds 0-19 --jobs 5
-python3 artifact_pipeline.py run --scenario 2 --seeds 0-19 --jobs 5
-python3 artifact_pipeline.py analyze --scenario all --seeds 0-19
-python3 artifact_pipeline.py validate --scenario all --seeds 0-19
-python3 artifact_pipeline.py audit --scenario all --seeds 0-19
-python3 artifact_pipeline.py consolidate --scenario all --seeds 0-19
+python3 artifact_pipeline.py run --scenario 1 --seeds 0-49 --jobs 5
+python3 artifact_pipeline.py run --scenario 2 --seeds 0-49 --jobs 5
+python3 artifact_pipeline.py analyze --scenario all --seeds 0-49
+python3 artifact_pipeline.py validate --scenario all --seeds 0-49
+python3 artifact_pipeline.py audit --scenario all --seeds 0-49
+python3 artifact_pipeline.py consolidate --scenario all --seeds 0-49
 ```
 
 The manifests enforce `DURATION=3`. The `--duration` override exists only for
@@ -75,7 +91,7 @@ scenarios. Analysis-only changes require reanalysis, not new simulations.
 - Five jobs require at least 30 GiB available memory.
 - At least 5 GiB is reserved for the system.
 - No batch launches below 3 GiB free disk.
-- Raw logs for successful seeds 1–19 are removed after compact-stat integrity checks.
+- Raw logs for successful nonzero seeds are removed after compact-stat integrity checks.
 - Seed 0 and all failed/anomalous logs are retained.
 
 The pipeline never commits, uploads, or creates a public repository.

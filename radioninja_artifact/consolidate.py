@@ -94,8 +94,8 @@ def consolidate(
     expected_total = sum(len(scenario.algorithms) * len(seeds) for scenario in scenarios)
     requested_scope = {scenario.id for scenario in scenarios}
     supported_scope = requested_scope == {"scenario1", "scenario2"}
-    required_seed_set = list(seeds) == list(range(20))
-    required_total = 180
+    required_seed_set = list(seeds) == list(range(50))
+    required_total = 450
     passed = (
             supported_scope
             and required_seed_set
@@ -109,7 +109,7 @@ def consolidate(
         "publication_gate_passed": passed,
         "publication_performed": False,
         "publication_note": "This pipeline never commits, uploads, or creates a public repository.",
-        "required_seed_set": list(range(20)),
+        "required_seed_set": list(range(50)),
         "observed_seed_set": list(seeds),
         "successful_full_duration_runs": successful_runs,
         "expected_full_duration_runs": required_total if supported_scope else expected_total,

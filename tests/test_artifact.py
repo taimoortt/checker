@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from radioninja_artifact.analysis import parse_log, percent_change, pf_metric
-from radioninja_artifact.cli import parse_seeds
+from radioninja_artifact.cli import build_parser, parse_seeds
 from radioninja_artifact.manifest import ROOT, load_scenario, scenario_ids
 from radioninja_artifact.manifest import load_selected
 from radioninja_artifact.runner import RunSpec, simulator_command
@@ -31,6 +31,9 @@ class ManifestTests(unittest.TestCase):
             )
 
 class CommandTests(unittest.TestCase):
+    def test_paper_seed_range_is_the_default(self):
+        self.assertEqual(build_parser().parse_args(["run"]).seeds, list(range(50)))
+
     def test_seed_parser(self):
         self.assertEqual(parse_seeds("0,2,4-6,2"), [0, 2, 4, 5, 6])
 

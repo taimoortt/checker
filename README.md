@@ -67,6 +67,10 @@ Run the complete configured workflow with:
 python artifact_pipeline.py reproduce --scenario all --jobs 5
 ```
 
+By default, this uses the paper's full 50-seed evaluation (seeds 0–49), which
+can take a long time. To save time, an approximate reproduction can be run with
+`--seeds 0-19`; its results may differ slightly from the full evaluation.
+
 The runner freezes the simulator and experiment inputs, records compact
 per-run statistics and provenance hashes, and resumes completed work safely.
 Generated data is written under `artifacts/` and is excluded from version

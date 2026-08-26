@@ -185,11 +185,15 @@ Counter: 2 Reassigning UE: 2 to Slice: 1
             root = Path(directory)
             seed_zero = RunSpec(scenario, algorithm, 0, root, 1)
             seed_one = RunSpec(scenario, algorithm, 1, root, 1)
+            seed_forty_nine = RunSpec(scenario, algorithm, 49, root, 1)
             self.assertEqual(run_one(seed_zero)["status"], "success")
             self.assertEqual(run_one(seed_one)["status"], "success")
+            self.assertEqual(run_one(seed_forty_nine)["status"], "success")
             self.assertTrue((seed_zero.run_dir / "stdout.log.gz").is_file())
             self.assertFalse((seed_one.run_dir / "stdout.log.gz").exists())
+            self.assertFalse((seed_forty_nine.run_dir / "stdout.log.gz").exists())
             self.assertTrue((seed_one.run_dir / "run_stats.json").is_file())
+            self.assertTrue((seed_forty_nine.run_dir / "run_stats.json").is_file())
             self.assertFalse((seed_one.run_dir / "run_stats.json.tmp").exists())
 
     def test_campaign_freeze_is_stable(self):

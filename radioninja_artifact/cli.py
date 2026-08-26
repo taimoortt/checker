@@ -13,7 +13,7 @@ from .manifest import ManifestError, load_selected
 from .runner import MAX_JOBS, build_simulator, freeze_campaign, make_specs, run_many, simulator_command
 
 
-DEFAULT_SEEDS = "0-19"
+DEFAULT_SEEDS = "0-49"
 
 
 def parse_seeds(value: str) -> List[int]:
@@ -40,7 +40,12 @@ def parse_seeds(value: str) -> List[int]:
 
 def _common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--scenario", choices=["1", "2", "1,2", "scenario1", "scenario2", "all"], default="all")
-    parser.add_argument("--seeds", type=parse_seeds, default=parse_seeds(DEFAULT_SEEDS), help="Seed list/range, default: 0-19")
+    parser.add_argument(
+        "--seeds",
+        type=parse_seeds,
+        default=parse_seeds(DEFAULT_SEEDS),
+        help="Seed list/range, default: 0-49 (use 0-19 for a faster approximate reproduction)",
+    )
     parser.add_argument("--run-dir", type=Path, default=Path("artifacts/runs"))
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts/analysis"))
 
@@ -66,7 +71,7 @@ def build_parser() -> argparse.ArgumentParser:
     audit_parser = subparsers.add_parser("audit", help="Independently recalculate and compare results")
     _common_arguments(audit_parser)
 
-    consolidate_parser = subparsers.add_parser("consolidate", help="Create the final 180-run pass/fail report")
+    consolidate_parser = subparsers.add_parser("consolidate", help="Create the final 450-run pass/fail report")
     _common_arguments(consolidate_parser)
 
     reproduce_parser = subparsers.add_parser("reproduce", help="Build, run, analyze, and validate")
@@ -119,7 +124,7 @@ def main(argv: Iterable[str] | None = None) -> int:
 
         consolidated = None
         if args.command == "consolidate" or (
-            args.command == "reproduce" and len(scenarios) == 2 and args.seeds == list(range(20))
+            args.command == "reproduce" and len(scenarios) == 2 and args.seeds == list(range(50))
         ):
             consolidated = consolidate(scenarios, run_dir, output_dir, args.seeds)
             print(json.dumps(consolidated, indent=2))

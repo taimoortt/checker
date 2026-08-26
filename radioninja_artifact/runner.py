@@ -276,7 +276,7 @@ def is_complete(spec: RunSpec) -> bool:
 def _remove_success_diagnostics(spec: RunSpec) -> None:
     # Cleanup is deliberately limited to a single run directory and cannot
     # reach the protected reference corpus under ROOT/results.
-    if not 1 <= spec.seed <= 19:
+    if spec.seed == 0:
         return
     for path in (_stdout_path(spec), _stderr_path(spec)):
         try:
@@ -381,7 +381,7 @@ def run_one(spec: RunSpec, force: bool = False) -> Dict[str, object]:
     return_code = completed.returncode if completed is not None else None
     success = return_code == 0 and not integrity_errors
     completed_at = time.time()
-    retained = not success or spec.seed == 0 or not 1 <= spec.seed <= 19
+    retained = not success or spec.seed == 0
     metadata.update({
         "completed_at": completed_at,
         "elapsed_seconds": completed_at - started,
