@@ -18,7 +18,7 @@ validating results with an independent audit.
 
 `scripts/` contains slice, workload, and baseline configurations.
 
-`artifact/` contains machine-readable experiment and validation definitions.
+`artifact/` contains machine-readable experiment and validation definitions as well as the collected real-world traces used for trace-driven simulations.
 
 `radioninja_artifact/` contains the experiment runner, compact-statistics
 pipeline, analysis code, and independent audit.
