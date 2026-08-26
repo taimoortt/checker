@@ -1,67 +1,88 @@
-# RadioNinja Scenarios 1 and 2 reproduction
+# RadioNinja
 
-This repository is a clean, runnable artifact for reproducing Figures 7b/7c and
-8b/8c/8d from the RadioNinja evaluation. It contains only the simulator source,
-the two experiment manifests, their configuration files, analysis/audit code,
-tests, and build metadata.
+RadioNinja is a research prototype for interference-aware resource allocation in
+radio access network slicing. This repository contains the simulation,
+experiment orchestration, and analysis artifact for the paper:
 
-The configured campaigns are:
+> M. Taimoor Tariq, Yuhang Chen, Haitham Hassanieh, and Radhika Mittal.
+> “Enabling Interference-Aware RAN Slicing.” NINeS 2026.
 
-| Scenario | Objectives | Algorithms | Seeds | Duration |
-|---|---|---:|---:|---:|
-| 1 | proportional fairness and maximum throughput | 5 | 0–19 | 3 seconds |
-| 2 | proportional fairness and higher fairness (`algo_psi=3`) | 4 | 0–19 | 3 seconds |
+The artifact provides a reproducible workflow for building the simulator,
+running configured experiments, generating figures and metrics, and validating
+results with an independent audit.
 
-The complete campaign contains 180 simulations. At most five simulator processes
-run concurrently. The runner preserves at least 5 GiB for the system, requires
-30 GiB available before using five jobs, and refuses to launch a batch with less
-than 3 GiB free disk.
+## Organization
 
-## Docker
+`src/` contains the LTE simulator and RadioNinja implementation.
+
+`scripts/` contains slice, workload, and baseline configurations.
+
+`artifact/` contains machine-readable experiment and validation definitions.
+
+`radioninja_artifact/` contains the experiment runner, compact-statistics
+pipeline, analysis code, and independent audit.
+
+`tests/` contains infrastructure and analysis checks.
+
+## Setup
+
+### Docker
+
+Build the artifact image:
 
 ```bash
+git clone https://github.com/taimoortt/checker.git
+cd checker
 docker build -t radioninja-artifact .
-docker run --rm \
-  -v "$PWD/artifacts:/opt/radioninja/artifacts" \
-  radioninja-artifact reproduce --scenario all --seeds 0-19 --jobs 5
 ```
 
-## Native build
+Run the configured experiments and persist the generated output locally:
+
+```bash
+docker run --rm \
+  -v "$PWD/artifacts:/opt/radioninja/artifacts" \
+  radioninja-artifact reproduce --scenario all --jobs 5
+```
+
+### Native installation
 
 The reference environment is Ubuntu 20.04 with GCC/G++ 10 and Python 3.8.
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential g++-10 libjsoncpp-dev python3 python3-venv
+
 python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install pip==24.0
+source .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+
 python artifact_pipeline.py build
 python -m unittest discover -s tests -v
-python artifact_pipeline.py reproduce --scenario all --seeds 0-19 --jobs 5
 ```
 
-For a non-executing command check:
+Run the complete configured workflow with:
 
 ```bash
-python artifact_pipeline.py run --scenario all --seeds 0 --duration 1 --jobs 5 --dry-run
+python artifact_pipeline.py reproduce --scenario all --jobs 5
 ```
 
-Generated data is written beneath `artifacts/` and is ignored by Git. Each run
-atomically records compact per-UE/per-slice statistics, provenance hashes, and
-completion metadata. Compressed raw logs are retained only for seed 0, failures,
-and anomalies. Successful runs resume safely from matching compact statistics.
+The runner freezes the simulator and experiment inputs, records compact
+per-run statistics and provenance hashes, and resumes completed work safely.
+Generated data is written under `artifacts/` and is excluded from version
+control.
 
-See [ARTIFACT_RUN.md](ARTIFACT_RUN.md) for individual pipeline commands and
-output details.
+See [ARTIFACT_RUN.md](ARTIFACT_RUN.md) for command-level usage, output formats,
+resource controls, and troubleshooting.
 
-## Citation and license
+## Status
 
-This artifact accompanies:
+This repository is an actively maintained research artifact. Experiment
+definitions and documentation may continue to evolve as the artifact is
+prepared for broader use.
 
-> M. Taimoor Tariq, Yuhang Chen, Haitham Hassanieh, and Radhika Mittal.
-> “Enabling Interference-Aware RAN Slicing.” NINeS 2026.
+## License and citation
 
-The software is distributed under GPLv3. See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md),
-and [CITATION.cff](CITATION.cff).
+RadioNinja is distributed under GPLv3. See [LICENSE](LICENSE),
+[NOTICE.md](NOTICE.md), and [CITATION.cff](CITATION.cff) for licensing and
+attribution details.
