@@ -7,9 +7,10 @@ experiment orchestration, and analysis artifact for the paper:
 > M. Taimoor Tariq, Yuhang Chen, Haitham Hassanieh, and Radhika Mittal.
 > “Enabling Interference-Aware RAN Slicing.” NINeS 2026.
 
-The artifact provides a reproducible workflow for building the simulator,
-running configured experiments, generating figures and metrics, and validating
-results with an independent audit.
+The artifact includes collected real-world cellular traces used by its
+trace-driven simulations and provides a reproducible workflow for building the
+simulator, running configured experiments, generating figures and metrics, and
+validating results with an independent audit.
 
 ## Organization
 
