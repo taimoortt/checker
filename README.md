@@ -1,2 +1,2 @@
 # checker
-checking
+Checking.
