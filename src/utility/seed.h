@@ -1,0 +1,47 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010,2011,2012,2013 TELEMATICS LAB, Politecnico di Bari
+ *
+ * This file is part of LTE-Sim
+ *
+ * LTE-Sim is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation;
+ *
+ * LTE-Sim is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LTE-Sim; if not, see <http://www.gnu.org/licenses/>.
+ *
+ * Author: Giuseppe Piro <g.piro@poliba.it>
+ */
+
+
+#ifndef SEED_H_
+#define SEED_H_
+
+static int commonSeed [100] =
+{
+	805290992, 749913912, 965326802, 697014729, 1518010490, 56234558, 1511265396, 1412837728, 947674421, 847592038,
+	927489264, 681312572, 349875021, 118726412, 505278933, 749201828, 631984179, 823760149, 471026384, 296831407,
+	189274950, 502937682, 643781905, 295887431, 820173964, 103784051, 927420349, 603198475, 278324912, 935743187,
+	504918273, 169384157, 382910473, 743012832, 981204719, 572190048, 281937492, 732048291, 495721039, 610293874,
+	382940192, 827510493, 917304857, 504928304, 201938209, 873492104, 729301982, 491823740, 108237410, 387493014,
+	591028374, 829310827, 372917203, 192837491, 203948102, 482109382, 928309823, 839120482, 129830918, 382910283,
+	482019283, 928301918, 819238192, 192837281, 928491023, 918230921, 920384092, 238291083, 238190238, 238192839,
+	736294825, 198472635, 502938471, 928471920, 384752910, 293847182, 857293847, 920384759, 102938475, 847583920,
+	583920384, 384759203, 203948572, 847592038, 928347592, 475920384, 203948572, 847592038, 928347592, 475920384,
+	203948572, 847592038, 928347592, 475920384, 203948572, 847592038, 928347592, 475920384, 203948572, 847592038,
+};
+
+static int GetCommonSeed (int i)
+{
+  if (i >= 0 && i< 100 )
+	  return commonSeed[i];
+  else
+	  return commonSeed[0];
+}
+#endif /* SEED_H_ */

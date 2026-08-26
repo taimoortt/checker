@@ -1,0 +1,10 @@
+.git
+.venv
+LTE-Sim
+artifacts
+results
+__pycache__
+*.o
+*.d
+*.log
+*.pdf

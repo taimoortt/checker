@@ -1,0 +1,26 @@
+{
+  "id": "scenario2",
+  "paper_figure": 8,
+  "description": "Four proportional-fair slices and four higher-fairness slices",
+  "duration": 3,
+  "topology": {
+    "macro_cells": 1,
+    "micro_cells_per_macro": 4,
+    "inter_micro_distance": 500,
+    "users": 160,
+    "slices": 8,
+    "bandwidth_mhz": 100
+  },
+  "algorithms": [
+    {"id": "radioninja", "label": "RadioNinja", "config": "scripts/8slice_pf_dr_objective_160/mu.json"},
+    {"id": "rsep", "label": "RSEP", "config": "scripts/8slice_pf_dr_objective_160/ss.json"},
+    {"id": "som_pf", "label": "SOM-PF", "config": "scripts/8slice_pf_dr_objective_160/ea_pf.json"},
+    {"id": "no_muting", "label": "No muting", "config": "scripts/8slice_pf_dr_objective_160/nomute.json"}
+  ],
+  "analysis": {
+    "kind": "pf_fairness",
+    "pf_slices": [0, 1, 2, 3],
+    "fairness_slices": [4, 5, 6, 7],
+    "fairness_psi": 3
+  }
+}

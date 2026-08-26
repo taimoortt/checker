@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite the RadioNinja paper."
+title: "RadioNinja reproducibility artifact"
+type: software
+version: 1.0.0
+date-released: 2026-08-24
+license: GPL-3.0-only
+authors:
+  - family-names: Tariq
+    given-names: "M. Taimoor"
+  - family-names: Chen
+    given-names: Yuhang
+  - family-names: Hassanieh
+    given-names: Haitham
+  - family-names: Mittal
+    given-names: Radhika
+preferred-citation:
+  type: conference-paper
+  title: "Enabling Interference-Aware RAN Slicing"
+  authors:
+    - family-names: Tariq
+      given-names: "M. Taimoor"
+    - family-names: Chen
+      given-names: Yuhang
+    - family-names: Hassanieh
+      given-names: Haitham
+    - family-names: Mittal
+      given-names: Radhika
+  year: 2026
+  collection-title: "Networked Intelligent Systems (NINeS 2026)"
+  doi: 10.4230/OASIcs.NINeS.2026.2

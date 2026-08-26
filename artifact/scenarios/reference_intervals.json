@@ -1,0 +1,30 @@
+{
+  "analysis_seed": 2026,
+  "bootstrap_resamples": 10000,
+  "scenario1": {
+    "checks": [
+      {"name": "RadioNinja PF improvement", "summary_key": "radioninja.pf", "paper_value": 33.5, "criterion": "mean_in_interval", "interval": [27.39, 40.21], "unit": "%"},
+      {"name": "RadioNinja MT throughput improvement", "summary_key": "radioninja.throughput", "paper_value": 9.3, "criterion": "mean_in_interval", "interval": [8.93, 9.75], "unit": "%"},
+      {"name": "SOM-PF PF improvement", "summary_key": "som_pf.pf", "paper_value": 37.4, "criterion": "mean_in_interval", "interval": [29.58, 46.21], "unit": "%"},
+      {"name": "SOM-MT throughput improvement", "summary_key": "som_tp.throughput", "paper_value": 35.2, "criterion": "mean_in_interval", "interval": [32.74, 37.57], "unit": "%"},
+      {"name": "RadioNinja-RSEP PF gap", "summary_key": "radioninja_minus_rsep.pf_gap", "paper_value": 18.4, "criterion": "mean_in_interval", "interval": [15.08, 21.40], "unit": "percentage_points"},
+      {"name": "MT slices harmed by SOM-PF", "summary_key": "som_pf.throughput.harmed_pct", "paper_value": 37.0, "criterion": "mean_in_interval", "interval": [28.75, 46.25], "unit": "%"},
+      {"name": "MT slices harmed by RSEP", "summary_key": "rsep.throughput.harmed_pct", "paper_value": 26.5, "criterion": "mean_in_interval", "interval": [17.5, 37.5], "unit": "%"},
+      {"name": "PF slices harmed by SOM-MT", "summary_key": "som_tp.pf.all_negative", "paper_value": "qualitative severe harm", "criterion": "boolean_true", "unit": "boolean"}
+    ]
+  },
+  "scenario2": {
+    "checks": [
+      {"name": "RadioNinja PF improvement", "summary_key": "radioninja.pf", "paper_value": 48.0, "criterion": "mean_in_interval", "interval": [38.38, 53.96], "unit": "%"},
+      {"name": "RadioNinja 10th-percentile gain", "summary_key": "radioninja.tail_throughput", "paper_value": 56.1, "criterion": "mean_in_interval", "interval": [51.60, 66.24], "unit": "%"},
+      {"name": "RadioNinja mean-throughput gain", "summary_key": "radioninja.mean_throughput", "paper_value": 3.4, "criterion": "mean_in_interval", "interval": [2.37, 3.97], "unit": "%"},
+      {"name": "SOM-PF 10th-percentile gain", "summary_key": "som_pf.tail_throughput", "paper_value": 44.3, "criterion": "mean_in_interval", "interval": [41.29, 57.75], "unit": "%"},
+      {"name": "RSEP mean-throughput change", "summary_key": "rsep.mean_throughput", "paper_value": -26.9, "criterion": "mean_in_interval", "interval": [-29.48, -27.78], "unit": "%"},
+      {"name": "RadioNinja-RSEP PF gap", "summary_key": "radioninja_minus_rsep.pf_gap", "paper_value": 33.0, "criterion": "mean_in_interval", "interval": [29.94, 36.41], "unit": "percentage_points"},
+      {"name": "RSEP PF slices harmed", "summary_key": "rsep.pf.harmed_pct", "paper_value": 29.0, "criterion": "mean_in_interval", "interval": [17.5, 37.5], "unit": "%"},
+      {"name": "RSEP 10th-percentile gain", "summary_key": "rsep.tail_throughput", "paper_value": "similar to RadioNinja", "criterion": "mean_in_interval", "interval": [43.08, 58.60], "unit": "%"},
+      {"name": "SOM-PF mean-throughput change", "summary_key": "som_pf.mean_throughput", "paper_value": "negative", "criterion": "mean_in_interval", "interval": [-6.25, -4.37], "unit": "%"}
+    ],
+    "required_investigation": "Confirm the SOM-PF algorithm/config mapping and paired analysis convention."
+  }
+}
