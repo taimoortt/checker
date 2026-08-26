@@ -62,7 +62,7 @@ python artifact_pipeline.py build
 python -m unittest discover -s tests -v
 ```
 
-The `traces` command downloads the versioned radio-trace release asset and
+The `traces` command installs the bundled, versioned radio-trace archive and
 verifies its SHA-256 checksums. Docker performs this step automatically. To use
 an existing copy instead, set `RADIONINJA_TRACE_DIR` to the directory containing
 the `-171db.log` through `-89db.log` files.

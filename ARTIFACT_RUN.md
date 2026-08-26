@@ -14,8 +14,9 @@ Install the versioned trace dataset before a native run:
 python3 artifact_pipeline.py traces
 ```
 
-The command downloads the release archive, verifies the archive SHA-256,
-extracts the 83 required RSRP traces, and verifies the logical dataset hash.
+The command verifies the bundled archive SHA-256, extracts the 83 required RSRP
+traces, and verifies the logical dataset hash. If the archive is absent from a
+source distribution, the installer retrieves the same version-pinned archive.
 The packaged traces contain the 1,000 TTI rows addressable by the simulator;
 additional rows in the original source logs are never read. Docker installs the
 same data automatically while building the image.

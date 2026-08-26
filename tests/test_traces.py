@@ -21,6 +21,7 @@ class TraceDataTests(unittest.TestCase):
             "version": "v1",
             "directory": "unused",
             "archive_root": "csl_2120",
+            "bundled_archive": "does-not-exist.tar.gz",
             "download_url": "https://example.invalid/traces.tar.gz",
             "archive_sha256": "",
             "file_count": 1,

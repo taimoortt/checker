@@ -179,8 +179,13 @@ def install_trace_data(
     location.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".trace-install-", dir=str(location.parent)) as temporary:
         temporary_root = Path(temporary)
-        archive = source.expanduser().resolve() if source is not None else temporary_root / "traces.tar.gz"
-        if source is None:
+        bundled = ROOT / str(data.get("bundled_archive", ""))
+        if source is not None:
+            archive = source.expanduser().resolve()
+        elif bundled.is_file():
+            archive = bundled
+        else:
+            archive = temporary_root / "traces.tar.gz"
             _download(str(data["download_url"]), archive)
         if not archive.is_file():
             raise TraceDataError(f"Trace archive does not exist: {archive}")
