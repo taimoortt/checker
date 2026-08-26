@@ -57,9 +57,15 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
+python artifact_pipeline.py traces
 python artifact_pipeline.py build
 python -m unittest discover -s tests -v
 ```
+
+The `traces` command downloads the versioned radio-trace release asset and
+verifies its SHA-256 checksums. Docker performs this step automatically. To use
+an existing copy instead, set `RADIONINJA_TRACE_DIR` to the directory containing
+the `-171db.log` through `-89db.log` files.
 
 Run the complete configured workflow with:
 
@@ -71,8 +77,9 @@ By default, this uses the paper's full 50-seed evaluation (seeds 0–49), which
 can take a long time. To save time, an approximate reproduction can be run with
 `--seeds 0-19`; its results may differ slightly from the full evaluation.
 
-The runner freezes the simulator and experiment inputs, records compact
-per-run statistics and provenance hashes, and resumes completed work safely.
+The runner verifies and freezes simulator, configuration, and trace-data
+provenance; records compact per-run statistics and provenance hashes; and
+resumes completed work safely.
 Generated data is written under `artifacts/` and is excluded from version
 control.
 

@@ -171,7 +171,7 @@ Counter: 2 Reassigning UE: 2 to Slice: 1
     def test_successful_seed_retention_policy(self, popen_mock):
         output = self.simulator_output()
 
-        def fake_popen(command, cwd, stdout, stderr):
+        def fake_popen(command, cwd, stdout, stderr, env):
             process = mock.Mock()
             process.stdout = io.BytesIO(output)
             process.stderr = io.BytesIO(b"")
@@ -196,12 +196,25 @@ Counter: 2 Reassigning UE: 2 to Slice: 1
             self.assertTrue((seed_forty_nine.run_dir / "run_stats.json").is_file())
             self.assertFalse((seed_one.run_dir / "run_stats.json.tmp").exists())
 
-    def test_campaign_freeze_is_stable(self):
+    @mock.patch(
+        "radioninja_artifact.runner.trace_provenance",
+        return_value={
+            "dataset": "test-traces",
+            "version": "v1",
+            "dataset_sha256": "trace-hash",
+            "trace_length": 1000,
+            "rsrp_min_db": -171,
+            "rsrp_max_db": -89,
+            "directory": "/tmp/test-traces",
+        },
+    )
+    def test_campaign_freeze_is_stable(self, _trace_provenance):
         with tempfile.TemporaryDirectory() as directory:
             first = freeze_campaign(Path(directory))
             second = freeze_campaign(Path(directory))
             self.assertEqual(first.manifest_hash, second.manifest_hash)
             self.assertEqual(first.simulator_hash, second.simulator_hash)
+            self.assertEqual(first.trace_dataset_hash, "trace-hash")
             self.assertTrue(first.simulator.is_file())
             scenario = load_scenario("scenario1")
             self.assertTrue(first.config_path(scenario.algorithms[0].config).is_file())

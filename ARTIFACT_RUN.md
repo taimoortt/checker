@@ -6,6 +6,31 @@ All operations use:
 python3 artifact_pipeline.py COMMAND [OPTIONS]
 ```
 
+## Radio trace data
+
+Install the versioned trace dataset before a native run:
+
+```bash
+python3 artifact_pipeline.py traces
+```
+
+The command downloads the release archive, verifies the archive SHA-256,
+extracts the 83 required RSRP traces, and verifies the logical dataset hash.
+The packaged traces contain the 1,000 TTI rows addressable by the simulator;
+additional rows in the original source logs are never read. Docker installs the
+same data automatically while building the image.
+
+An existing full trace set may be used without copying it into the repository:
+
+```bash
+export RADIONINJA_TRACE_DIR=/path/to/csl_2120
+python3 artifact_pipeline.py run --scenario all --jobs 5
+```
+
+The runner validates the first 1,000 rows of files `-171db.log` through
+`-89db.log`. The dataset hash is included in the immutable campaign manifest,
+so changing traces requires a new run directory.
+
 ## Complete reproduction
 
 ```bash
@@ -47,6 +72,7 @@ python3 artifact_pipeline.py reproduce \
 ## Controlled workflow
 
 ```bash
+python3 artifact_pipeline.py traces
 python3 artifact_pipeline.py build
 python3 -m unittest discover -s tests -v
 python3 artifact_pipeline.py run --scenario 1 --seeds 0-49 --jobs 5

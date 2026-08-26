@@ -37,6 +37,7 @@
 #include "stdio.h"
 #include "fstream"
 #include <cassert>
+#include <cstdlib>
 #include <sstream>
 
 #define TRACE_LENGTH 1000
@@ -302,7 +303,11 @@ std::map<int, double> UserEquipment::GetInterferenceRSRP(){
 }
 
 std::vector<std::vector<float>> UserEquipment::GenOneTrace(int rsrp) {
-  const std::string base_path = "/home/taimoor/5g_traces_ngscope/csl_2120/";
+  const char* configured_path = std::getenv("RADIONINJA_TRACE_DIR");
+  std::string base_path = configured_path == NULL ? "data/csl_2120" : configured_path;
+  if (!base_path.empty() && base_path.back() != '/') {
+      base_path += '/';
+  }
   const std::string fname = base_path + std::to_string(rsrp) + "db.log";
   std::ifstream file(fname);
   if (!file) {
@@ -316,7 +321,7 @@ std::vector<std::vector<float>> UserEquipment::GenOneTrace(int rsrp) {
   std::string line;
   std::istringstream iss;
 
-  while (getline(file, line)) {
+  while (rsrps.size() < TRACE_LENGTH && getline(file, line)) {
       iss.clear();
       iss.str(line);
       float num;
@@ -333,6 +338,11 @@ std::vector<std::vector<float>> UserEquipment::GenOneTrace(int rsrp) {
       if (!current_rsrps.empty()) {
           rsrps.push_back(std::move(current_rsrps));  // Use move semantics to avoid copying
       }
+  }
+  if (rsrps.size() != TRACE_LENGTH) {
+      std::cerr << "Trace file has fewer than " << TRACE_LENGTH
+                << " usable rows: " << fname << std::endl;
+      exit(1);
   }
   return rsrps;
 }

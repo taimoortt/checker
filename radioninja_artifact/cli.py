@@ -11,6 +11,7 @@ from .audit import AuditError, audit_scenario
 from .consolidate import ConsolidationError, consolidate
 from .manifest import ManifestError, load_selected
 from .runner import MAX_JOBS, build_simulator, freeze_campaign, make_specs, run_many, simulator_command
+from .traces import TraceDataError, install_trace_data, trace_provenance
 
 
 DEFAULT_SEEDS = "0-49"
@@ -55,6 +56,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("build", help="Build LTE-Sim")
 
+    traces_parser = subparsers.add_parser("traces", help="Download and verify radio trace data")
+    traces_parser.add_argument("--source", type=Path, default=None, help="Install from a local archive")
+    traces_parser.add_argument("--destination", type=Path, default=None, help="Override the trace directory")
+    traces_parser.add_argument("--force", action="store_true", help="Replace an invalid existing trace set")
+
     run_parser = subparsers.add_parser("run", help="Run simulations")
     _common_arguments(run_parser)
     run_parser.add_argument("--jobs", type=int, default=5)
@@ -89,6 +95,13 @@ def main(argv: Iterable[str] | None = None) -> int:
             build_simulator()
             return 0
 
+        if args.command == "traces":
+            installed = install_trace_data(
+                source=args.source, destination=args.destination, force=args.force
+            )
+            print(json.dumps(installed, indent=2))
+            return 0
+
         scenarios = load_selected(args.scenario)
         run_dir = args.run_dir.resolve()
         output_dir = args.output_dir.resolve()
@@ -102,6 +115,7 @@ def main(argv: Iterable[str] | None = None) -> int:
                 for spec in specs:
                     print(" ".join(simulator_command(spec)))
                 return 0
+            trace_provenance()
             if args.command == "reproduce":
                 build_simulator()
             campaign = freeze_campaign(run_dir)
@@ -133,6 +147,14 @@ def main(argv: Iterable[str] | None = None) -> int:
         if consolidated is not None:
             passed = passed and bool(consolidated.get("passed"))
         return 0 if passed else 1
-    except (ManifestError, AnalysisError, AuditError, ConsolidationError, OSError, RuntimeError) as exc:
+    except (
+        ManifestError,
+        AnalysisError,
+        AuditError,
+        ConsolidationError,
+        TraceDataError,
+        OSError,
+        RuntimeError,
+    ) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

@@ -8,6 +8,7 @@ src/load-parameters.h
 # Experiment and analysis outputs
 artifacts/
 results/
+data/csl_2120/
 
 # Python/editor state
 .venv/

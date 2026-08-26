@@ -21,13 +21,14 @@ from .run_stats import (
     load_run_stats,
     validate_run_stats,
 )
+from .traces import TRACE_ENVIRONMENT_VARIABLE, trace_directory, trace_provenance
 
 
 MAX_JOBS = 5
 FIVE_GIB = 5 * 1024**3
 THIRTY_GIB = 30 * 1024**3
 MIN_FREE_DISK = 3 * 1024**3
-FREEZE_SCHEMA_VERSION = 1
+FREEZE_SCHEMA_VERSION = 2
 
 
 def _sha256(path: Path) -> str:
@@ -65,7 +66,7 @@ def _source_files() -> List[Path]:
     return files
 
 
-def _simulation_inputs() -> Tuple[str, Dict[str, str], Dict[str, object]]:
+def _simulation_inputs() -> Tuple[str, Dict[str, str], Dict[str, object], Dict[str, object]]:
     config_paths: List[Path] = []
     normalized_scenarios: Dict[str, object] = {}
     for scenario_id in scenario_ids():
@@ -82,10 +83,13 @@ def _simulation_inputs() -> Tuple[str, Dict[str, str], Dict[str, object]]:
         config_paths.extend(ROOT / item["config"] for item in data["algorithms"])
     config_digest, config_hashes = _hash_files(config_paths)
     canonical_scenarios = json.dumps(normalized_scenarios, sort_keys=True, separators=(",", ":"))
+    traces = trace_provenance()
+    normalized_traces = {key: value for key, value in traces.items() if key != "directory"}
     digest = hashlib.sha256()
     digest.update(canonical_scenarios.encode("utf-8"))
     digest.update(config_digest.encode("ascii"))
-    return digest.hexdigest(), config_hashes, normalized_scenarios
+    digest.update(json.dumps(normalized_traces, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    return digest.hexdigest(), config_hashes, normalized_scenarios, traces
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,7 @@ class CampaignFreeze:
     simulator: Path
     simulator_hash: str
     manifest_hash: str
+    trace_dataset_hash: str
 
     def config_path(self, live_path: Path) -> Path:
         return self.directory / "configs" / live_path.relative_to(ROOT)
@@ -106,7 +111,7 @@ def freeze_campaign(output_root: Path) -> CampaignFreeze:
     freeze_dir.mkdir(parents=True, exist_ok=True)
     live_simulator = ROOT / "LTE-Sim"
     source_digest, source_hashes = _hash_files(_source_files())
-    input_digest, config_hashes, normalized_scenarios = _simulation_inputs()
+    input_digest, config_hashes, normalized_scenarios, traces = _simulation_inputs()
 
     if manifest_path.is_file():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -135,6 +140,7 @@ def freeze_campaign(output_root: Path) -> CampaignFreeze:
             frozen_simulator,
             str(manifest["simulator_hash"]),
             _sha256(manifest_path),
+            str(dict(manifest["trace_data"])["dataset_sha256"]),
         )
 
     live_simulator_hash = simulator_hash(live_simulator)
@@ -160,10 +166,17 @@ def freeze_campaign(output_root: Path) -> CampaignFreeze:
         "simulation_inputs_hash": input_digest,
         "config_files": config_hashes,
         "scenarios": normalized_scenarios,
+        "trace_data": {key: value for key, value in traces.items() if key != "directory"},
     }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(manifest_path, manifest)
-    return CampaignFreeze(freeze_dir, frozen_simulator, live_simulator_hash, _sha256(manifest_path))
+    return CampaignFreeze(
+        freeze_dir,
+        frozen_simulator,
+        live_simulator_hash,
+        _sha256(manifest_path),
+        str(traces["dataset_sha256"]),
+    )
 
 
 @dataclass(frozen=True)
@@ -331,6 +344,7 @@ def run_one(spec: RunSpec, force: bool = False) -> Dict[str, object]:
         "config_hash": live_config_hash,
         "simulator_hash": frozen_simulator_hash,
         "campaign_manifest_hash": spec.campaign.manifest_hash if spec.campaign else None,
+        "trace_dataset_hash": spec.campaign.trace_dataset_hash if spec.campaign else None,
         "command": command,
         "started_at": started,
         "status": "running",
@@ -343,7 +357,15 @@ def run_one(spec: RunSpec, force: bool = False) -> Dict[str, object]:
     execution_error: str | None = None
     try:
         with gzip.open(stdout_tmp, "wb") as stdout, gzip.open(stderr_tmp, "wb") as stderr:
-            process = subprocess.Popen(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            environment = os.environ.copy()
+            environment[TRACE_ENVIRONMENT_VARIABLE] = str(trace_directory())
+            process = subprocess.Popen(
+                command,
+                cwd=ROOT,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=environment,
+            )
             if process.stdout is None or process.stderr is None:
                 raise OSError("Cannot open simulator output pipes")
             with ThreadPoolExecutor(max_workers=2) as compressors:
